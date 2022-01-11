@@ -1,0 +1,87 @@
+// THANKS TO JOHN KOMARNICKI FOR THIS APP
+// https://www.youtube.com/c/JohnKomarnicki
+
+VUE3 -- SUPABASE -- active tracker app
+
+* https://github.com/johnkomarnicki/active_tracker/tree/starting-files 
+den starter files > terminal npm install > 
+
+* https://supabase.io/ den kayıt github ile > proje ismi, password region select >  bir kaç dk sonra proje ekranı gelecek burada istediğimiz ekranı ekleyebiliriz > https://supabase.io/docs/guides/with-vue-3 de vue3 e göre hazırlanmış docs var > https://supabase.io/docs/guides/with-vue-3#initialize-a-vue-3-app supabase projeye nasıl ekleyeceğiz şu anda bizde zaten eklenmiş durumda > ikinci adım .env konusu  burada bize proje sayfasında verilen PI key i projedeki .env ye koyacağız anon key ve url bilgilerini alıp .env ye koyalım ve local serverı durdurup yeniden başlatalım 
+
+* src/supabase.js dosyası lazım, burada /src/spabase/init.js dosyası projede oluşturulmuş, supabase in doc da bize veridği kodları bu dosyanın iine yapıştıralım > kodlar bize VITE'li olarak verilmiş bunları .env dosyasında ne şekildeyse o şekilde değiştiriyoruz VITE --> VUE_APP_
+
+* artık supabase proje sayfasından database i ayarlayalım > proje sayfasından soldaki database sekmesi > new > isim ver (workouts) > enable row level security > yeni colon ekle > updated_at > timestamptz > NOW() şeklinde ayarla > bir colon daha ekle > workoutName type varchar > bir tane daha > workoutType type ı varchar > bir tane daha exercises type json > sonra save 
+
+* local projeye dönelim > Navigation.vue ya h1 hello ekleyip bunu App.vue ya ekleyip bak > import components object e kele, template e ekle > 
+
+* deneme başarılı > Navigation.vue da header elemenetini tailwind ile style vermeye başlayalım, dosyalar arasında tailwind.config.js var oradanda faydalanarak
+
+* App.vue da da bazı style düzenlemeleri > nav ı düzenlemeye devam > :to="{name: 'Home'}" kullanımına dikkat > sayfa linklerini router-link ile veriyoruz bunlara dikkat > 
+
+* router ayarları router/index.js > koda bak
+
+* register.vue > email ve password u setup da hazırla 
+
+* login view de neredeyse register ile aynı düzenle farklılıkları hallet
+
+* supabase e signup signin için dön > API > User Management > signup daki kodu kopyala > Register.vue ya supabase, userRouter import > register func hazırla >  register func hazırladık, register sayfasından email ve password girip supabase e yolladık, ve ap bizi login sayfasına yolladı olması gerektiği gibi supabase bize bir confirm maili yoladı kabul ettik 
+
+* login i yapalım > loginde de benzer işlemler > import supabase import useRouter ... koda bak
+
+* register ve login işlemlerini yaptık, şimdi bunları store da tutmak için store işlemleri 
+
+* store/index.js de state i içinde sadece ser olarak hazırladık > App.vue > ref supabase import > burada eğer user supabase e girdiyse bu bilgi lazım bize bunu da yine docs dan alıyoruz API>User Management kısmından > eğer user sisteme girdiyse App gösterilsin/çalışsın
+
+* sisteme login olunca yani authentication alınca state değişimi nasıl > docs ta https://supabase.io/docs/reference/javascript/auth-onauthstatechange
+
+> store import sonrası store da user state ini değiştirecek func yazıp karşılığında store da setUser methodunu tanımlayacağız > bu da
+const methods = {
+    setUser(payload){
+        state.user = payload ? payload.user : null
+    }
+}
+> 
+
+* .....
+
+* logout > Navigation.vue > import supabase ve useRouter > router tanımlayıp lofout func u hazırlayalım supabase docs da var > 
+
+* eğer user sisteme girdiyse navbar da login sekmesi görünmesi gşrmediyse de logout görünmesim > sistemde mi değil mi bilgisi state olarak store da ve ayrıca bunu computed ile kontrol edeceğimiz için computed ve store import > ve template de hangi drumlarda ne görünecek vs yapımı 
+
+* workout kısmına yani create > 
+
+* create > router/index.js de route ayarları > Create a bir create yazalım, Navigation da ayarı ayap > Create.vue > 
+
+* ref import ile dataları reaktif yapalım > dataları hazırla > template kısmında form alanları 
+
+* scriptte add exercise > func oluşturalım burada exercises array ine training tipine göre nesne pushlayacağız önemli bir nokta uid paketi yüklenmişti, bu unique id veriyordu bunu kullanacağız bunun için uid yi import edeceğiz > addExercise ı return listesne ekle > template de ilgili butonlara da ekle > ayrıca cardio ve strength seçimleri değiştiğinde array i boşaltacak fun hazırla workoutChange ve bunu template de ilgili select e @change olarak ekle 
+
+* delete func > filyer ile delete yaptık be delete img sine atadık
+
+* şimdi artık gerçek workout oluşturalım > supabase docs abakalım yeni bir row ekleme yapacağız çünkü bu workoutlar supabase de tutlacak workouts da insert rows başlığınd aörnek kodlar var >  func yazdıktan sonra en tepedeki forma @submit eventine bu func u atayacağız .prevent eklemeyi unutma > deneme
+
+* bu noktada spabase tarafında read, write(insert), update ve delete işlemleri için yeni policy ler tanımlamalıyız bunu supabase in zaten bize sunduğu template lerde küçük değişiklikler yaparak mesela isimlerini yapıyoruz 
+
+* home.vue yu yapalım 
+
+* ref, supabase import > dataları tanımlayalım, data normal getireceğimiz dataları koyacağımız array, dataLoaded ise t/f olacak > dataları getirmek için supabaze docs da read rows da fereken func var >  func yadık denemesini yapalım > console'a supabase den data.value geldi > template'i yapalım
+
+* supabase tables daki biraz önce girdiğimiz satırı silelim ve boş halini test edelim app ın > başarılı hem  supabase de veri varken hemde yokken sıkıntı yok 
+
+* view workout sayfası > router/index.js path i nasıl yaptığımıza dikkat çünkü path burada parametre alacak id olarak, detayını görmek istedğişz workout un id si > import lar ref, supabase, router >
+
+* datayı hazırla > getData methodunu Home.vue dan koyalayıp getir ancak burada özel bir id nin verilerini alacağımız için düzenleme lazım, koda bak > ayrıca homda workout kutusunda tıklayınca bu ViewWokout a gitmeli yani oradaki route u da düzeltelim > 
+
+* .....
+
+* delete workout 
+
+* add exercise > create.vue daki addExercise ı burayada kopyalayayıp düzenleyeceğiz > uid import > func da gerekli düzenlemeleri yapıp edit durumunda çıkan add exercise butonlarına click olarak atayalım
+
+* delete exercise > bunuda create.vue dan alıp burada modifiye edelim > 
+
+* update workout > burada supabase de devreye giriyor, koda bak, problem yok
+
+* genel pronblem olarak sayfalar değişiyor ancak sayfa başlığı sabit kalıyor bunu yapalım router/index.js > meta: title bilgisi ekleyeceğiz route lara >
+
+* route guard ları yapalım, yani mesela logout olunca adres çbuğuna mesela workout yazdığımızda o sayfaya gitmesin > router index e supabase ekleyelim >  meta ya auth ekledik true false şeklinde > 
